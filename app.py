@@ -2,14 +2,17 @@ from flask import Flask, jsonify, make_response
 from flask_limiter import Limiter
 from flask_limiter.util import get_remote_address
 from flask import send_from_directory
+import os
 import json
 import random
 
 app = Flask(__name__, static_folder='resource')
 
+script_dir = os.path.dirname(__file__)  # Directory of the current script
+abs_file_path = os.path.join(script_dir, 'mcq_data.json')
 
 # Load data from JSON file
-with open('mcq_data.json', 'r') as file:
+with open(abs_file_path, 'r') as file:
     data = json.load(file)
 
 # Initialize Limiter with default rate limits (10 requests per minute)
