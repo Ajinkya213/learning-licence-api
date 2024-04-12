@@ -5,8 +5,10 @@ from flask import send_from_directory
 import os
 import json
 import random
+from flask_cors import CORS
 
 app = Flask(__name__, static_folder='resource')
+CORS(app)
 
 script_dir = os.path.dirname(__file__)  # Directory of the current script
 abs_file_path = os.path.join(script_dir, 'mcq_data.json')
@@ -21,16 +23,22 @@ limiter = Limiter(
     app = app
 )
 
+#Check if the server is working
+@app.route('/', methods=['GET'])
+def checkServer():
+    return make_response({'status': 'OK'})
+
+
 # Define endpoint to get 10 random elements with rate limiting
 @app.route('/getMCQ', methods=['GET'])
-@limiter.limit("5 per 1 minutes")  # Adjust rate limit as needed
+@limiter.limit("5 per 1 minutes")  # Rate limit
 def random_elements():
     try:
-        # Select 10 random elements from the data
+        # Getting 10 random data from mcq_data.json file.
         random_selection = random.sample(data, 10)
         return jsonify(random_selection)
     except Exception as e:
-        # Handle unexpected errors
+        # Handling errors
         error_message = "An error occurred while processing the request."
         return make_response(jsonify({'error': error_message}), 500)
 
